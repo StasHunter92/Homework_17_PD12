@@ -34,5 +34,4 @@ movies_schema = MovieSchema(many=True)
 director_schema = DirectorSchema()
 directors_schema = DirectorSchema(many=True)
 
-genre_schema = GenreSchema()
 genres_schema = GenreSchema(many=True)

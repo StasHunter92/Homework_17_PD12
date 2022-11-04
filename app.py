@@ -1,8 +1,7 @@
 from flask import Flask, request
 from flask_restx import Api, Resource
 from classes.db_classes import db, Movie, Director, Genre
-from schemas.db_schemas import movie_schema, movies_schema, director_schema, directors_schema, genre_schema, \
-    genres_schema
+from schemas.db_schemas import movie_schema, movies_schema, director_schema, directors_schema, genres_schema
 from utils.create_db import create_database
 from utils.utils import add_object_to_database, delete_object_from_database
 # ----------------------------------------------------------------------------------------------------------------------
@@ -28,7 +27,9 @@ genre_ns = api.namespace('genres')
 # Main routes
 @movie_ns.route('/')
 class MoviesView(Resource):
-    def get(self):
+    @staticmethod
+    def get():
+        """Get a list of all movies"""
         director_id: str = request.args.get('director_id')
         genre_id: str = request.args.get('genre_id')
         page: str = request.args.get('page')
@@ -61,7 +62,9 @@ class MoviesView(Resource):
         all_movies = Movie.query.all()
         return movies_schema.dump(all_movies), 200
 
-    def post(self):
+    @staticmethod
+    def post():
+        """Add a new movie to the database"""
         data = request.json
         try:
             new_movie = Movie(**data)
@@ -73,13 +76,17 @@ class MoviesView(Resource):
 
 @movie_ns.route('/<int:movie_id>')
 class MovieView(Resource):
-    def get(self, movie_id):
+    @staticmethod
+    def get(movie_id):
+        """Get a movie by id"""
         movie = Movie.query.get(movie_id)
         if movie:
             return movie_schema.dump(movie), 200
         return "Invalid id", 404
 
-    def put(self, movie_id):
+    @staticmethod
+    def put(movie_id):
+        """Update a movie by id"""
         data = request.json
         movie = Movie.query.get(movie_id)
 
@@ -94,7 +101,9 @@ class MovieView(Resource):
         add_object_to_database(movie)
         return "", 204
 
-    def patch(self, movie_id):
+    @staticmethod
+    def patch(movie_id):
+        """Partially update a movie by id"""
         data = request.json
         movie = Movie.query.get(movie_id)
 
@@ -116,7 +125,9 @@ class MovieView(Resource):
         add_object_to_database(movie)
         return "", 204
 
-    def delete(self, movie_id):
+    @staticmethod
+    def delete(movie_id):
+        """Delete a movie by id"""
         movie = Movie.query.get(movie_id)
         delete_object_from_database(movie)
         return "", 204
@@ -124,11 +135,15 @@ class MovieView(Resource):
 
 @director_ns.route('/')
 class DirectorsView(Resource):
-    def get(self):
+    @staticmethod
+    def get():
+        """Get a list of all directors"""
         all_directors = Director.query.all()
         return directors_schema.dump(all_directors), 200
 
-    def post(self):
+    @staticmethod
+    def post():
+        """Add a new director to the database"""
         data = request.json
         try:
             new_director = Director(**data)
@@ -140,13 +155,17 @@ class DirectorsView(Resource):
 
 @director_ns.route('/<int:director_id>')
 class DirectorView(Resource):
-    def get(self, director_id):
+    @staticmethod
+    def get(director_id):
+        """Get a director by id"""
         director = Director.query.get(director_id)
         if director:
             return director_schema.dump(director), 200
         return "Invalid id", 500
 
-    def put(self, director_id):
+    @staticmethod
+    def put(director_id):
+        """Update a director by id"""
         data = request.json
         director = Director.query.get(director_id)
 
@@ -155,7 +174,9 @@ class DirectorView(Resource):
         add_object_to_database(director)
         return "", 204
 
-    def patch(self, director_id):
+    @staticmethod
+    def patch(director_id):
+        """Partially update a director by id"""
         data = request.json
         director = Director.query.get(director_id)
 
@@ -165,7 +186,9 @@ class DirectorView(Resource):
         add_object_to_database(director)
         return "", 204
 
-    def delete(self, director_id):
+    @staticmethod
+    def delete(director_id):
+        """Delete a director by id"""
         director = Director.query.get(director_id)
         delete_object_from_database(director)
         return "", 204
@@ -173,11 +196,15 @@ class DirectorView(Resource):
 
 @genre_ns.route('/')
 class GenresView(Resource):
-    def get(self):
+    @staticmethod
+    def get():
+        """Get a list of all genres"""
         all_genres = Genre.query.all()
         return genres_schema.dump(all_genres), 200
 
-    def post(self):
+    @staticmethod
+    def post():
+        """Add a new genre to the database"""
         data = request.json
         try:
             new_genre = Genre(**data)
@@ -189,13 +216,18 @@ class GenresView(Resource):
 
 @genre_ns.route('/<int:genre_id>')
 class GenreView(Resource):
-    def get(self, genre_id):
+    @staticmethod
+    def get(genre_id):
+        """Get a list of all films by genre id"""
         genre = Genre.query.get(genre_id)
         if genre:
-            return genre_schema.dump(genre), 200
+            movies_by_genre = db.session.query(Movie).filter_by(genre_id=genre_id).all()
+            return movies_schema.dump(movies_by_genre), 200
         return "Invalid id", 500
 
-    def put(self, genre_id):
+    @staticmethod
+    def put(genre_id):
+        """Update a genre by id"""
         data = request.json
         genre = Genre.query.get(genre_id)
 
@@ -204,7 +236,9 @@ class GenreView(Resource):
         add_object_to_database(genre)
         return "", 204
 
-    def patch(self, genre_id):
+    @staticmethod
+    def patch(genre_id):
+        """Partially update a genre by id"""
         data = request.json
         genre = Genre.query.get(genre_id)
 
@@ -214,7 +248,9 @@ class GenreView(Resource):
         add_object_to_database(genre)
         return "", 204
 
-    def delete(self, genre_id):
+    @staticmethod
+    def delete(genre_id):
+        """Delete a genre by id"""
         genre = Genre.query.get(genre_id)
         delete_object_from_database(genre)
         return "", 204
