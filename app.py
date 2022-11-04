@@ -38,19 +38,19 @@ class MoviesView(Resource):
             movies = db.session.query(Movie).filter_by(director_id=director_id, genre_id=genre_id).all()
             if movies:
                 return movies_schema.dump(movies), 200
-            return "Movies not found", 404
+            return "Movies not found by this director and genre", 404
 
         if director_id:
             movies = db.session.query(Movie).filter_by(director_id=director_id).all()
             if movies:
                 return movies_schema.dump(movies), 200
-            return "Movies not found", 404
+            return "Movies not found by this director", 404
 
         if genre_id:
             movies = db.session.query(Movie).filter_by(genre_id=genre_id).all()
             if movies:
                 return movies_schema.dump(movies), 200
-            return "Movies not found", 404
+            return "Movies not found by this genre", 404
 
         if page:
             try:
